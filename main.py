@@ -27,7 +27,6 @@ print("Middle C is mapped to key A (first note at 2nd row) in the game.")
 
 print('MIDI Input Devices:')
 for device_id in range(pygame.midi.get_count()):
-    device_info: tuple[bytes, bytes, int, int, int]
     device_info = pygame.midi.get_device_info(device_id)
     is_input = device_info[2]
     if is_input:
