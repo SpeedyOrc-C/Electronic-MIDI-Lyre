@@ -69,8 +69,6 @@ while True:
 
         midi_key = event[0][1]
         if midi_key not in available_keys:
-            print('\b' * 128 + ' ' * 128 + '\b' * 128, end='')
-            print(f'Key {midi_key} is not in lyre\'s range.', end='')
             continue
 
         lyre_key = midi_key_to_lyre_key[midi_key]
