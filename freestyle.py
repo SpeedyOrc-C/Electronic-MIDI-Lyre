@@ -10,9 +10,13 @@ def is_note_on(e: int) -> bool: return e >> 4 == 0b1001
 def is_note_off(e: int) -> bool: return e >> 4 == 0b1000
 
 
-def main(mapping: dict[int, str], transpose: int, enable_hold: bool):
+def main(mapping: dict[int, str], transpose: int, enable_hold: bool) -> int:
     midi_in = rtmidi.MidiIn()
     available_ports: list[str] = midi_in.get_ports()
+
+    if not available_ports:
+        print('No MIDI devices found, please check the connection.')
+        return 1
 
     for i, available_port in enumerate(available_ports):
         print(f'{i} - {available_port}')

@@ -65,3 +65,5 @@ def main(mapping: dict[int, str], transpose: int, file_path: str, enable_hold: b
     print()
 
     print('Song terminated normally.')
+
+    return 0

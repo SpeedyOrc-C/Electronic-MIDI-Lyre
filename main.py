@@ -14,7 +14,7 @@ class Args:
     enable_hold: bool
 
 
-def main(args: Args):
+def main(args: Args) -> int:
     mapping: dict[int, str]
 
     match args.instrument:
@@ -27,9 +27,9 @@ def main(args: Args):
 
     match args.action:
         case 'freestyle':
-            freestyle.main(mapping, args.transpose, args.enable_hold)
+            return freestyle.main(mapping, args.transpose, args.enable_hold)
         case 'play':
-            play.main(mapping, args.transpose, args.file_path, args.enable_hold)
+            return play.main(mapping, args.transpose, args.file_path, args.enable_hold)
         case _:
             raise ValueError('This should never happen')
 
@@ -53,4 +53,4 @@ if __name__ == '__main__':
             if parsed_args.file_path is None:
                 parser.error('Expect a MIDI file.')
 
-    main(parsed_args)
+    exit(main(parsed_args))
