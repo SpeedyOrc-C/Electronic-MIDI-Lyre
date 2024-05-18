@@ -13,7 +13,7 @@ def on_press(key: pynput.keyboard.Key):
         _thread.interrupt_main()
 
 
-def main(mapping: dict[int, str], transpose: int, file_path: str):
+def main(mapping: dict[int, str], transpose: int, file_path: str, enable_hold: bool):
     controller = pynput.keyboard.Controller()
     pynput.keyboard.Listener(on_press=on_press).start()
 

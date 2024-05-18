@@ -1,7 +1,3 @@
-"""
-A script that helps you play Lyres in Genshin Impact with your MIDI keyboard.
-"""
-
 import time
 
 import rtmidi
@@ -45,7 +41,8 @@ def main(mapping: dict[int, str], transpose: int, enable_hold: bool):
     while True:
         raw_message = midi_in.get_message()
 
-        if raw_message is None: continue
+        if raw_message is None:
+            continue
 
         [event, note, velocity], dt = raw_message
         mapped_note = note + transpose
