@@ -5,6 +5,6 @@ MAPPING_GENSHIN_LYRE: dict[int, str] = {
 }
 
 MAPPING_GENSHIN_HORN: dict[int, str] = {
+    84: 'q', 86: 'w', 88: 'e', 89: 'r', 91: 't', 93: 'y', 95: 'u',
     72: 'a', 74: 's', 76: 'd', 77: 'f', 79: 'g', 81: 'h', 83: 'j',
-    60: 'z', 62: 'x', 64: 'c', 65: 'v', 67: 'b', 69: 'n', 71: 'm',
 }
