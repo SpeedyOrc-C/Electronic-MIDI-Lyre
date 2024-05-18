@@ -14,7 +14,7 @@ def is_note_on(e: int) -> bool: return e >> 4 == 0b1001
 def is_note_off(e: int) -> bool: return e >> 4 == 0b1000
 
 
-def main(mapping: dict[int, str], transpose: int):
+def main(mapping: dict[int, str], transpose: int, enable_hold: bool):
     midi_in = rtmidi.MidiIn()
     available_ports: list[str] = midi_in.get_ports()
 
@@ -56,9 +56,14 @@ def main(mapping: dict[int, str], transpose: int):
             print(f'Cannot map note #{mapped_note}.')
             continue
 
-        if is_note_on(event):
-            controller.press(key)
-        elif is_note_off(event):
-            controller.release(key)
+        if enable_hold:
+            if is_note_on(event):
+                controller.press(key)
+            elif is_note_off(event):
+                controller.release(key)
+        else:
+            if is_note_on(event) or is_note_off(event):
+                controller.press(key)
+                controller.release(key)
 
         time.sleep(0.01)

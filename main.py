@@ -11,6 +11,7 @@ class Args:
     action: str
     file_path: Optional[str]
     transpose: int
+    enable_hold: bool
 
 
 def main(args: Args):
@@ -26,9 +27,9 @@ def main(args: Args):
 
     match args.action:
         case 'freestyle':
-            freestyle.main(mapping, args.transpose)
+            freestyle.main(mapping, args.transpose, args.enable_hold)
         case 'play':
-            play.main(mapping, args.transpose, args.file_path)
+            play.main(mapping, args.transpose, args.file_path, args.enable_hold)
         case _:
             raise ValueError('This should never happen')
 
@@ -39,6 +40,7 @@ if __name__ == '__main__':
     parser.add_argument('action', choices=['freestyle', 'play'])
     parser.add_argument('file_path', nargs='?')
     parser.add_argument('-t', '--transpose', type=int, default=0)
+    parser.add_argument('-eh', '--enable-hold', action='store_true')
 
     # noinspection PyTypeChecker
     parsed_args: Args = parser.parse_args()

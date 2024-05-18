@@ -43,16 +43,25 @@ def main(mapping: dict[int, str], transpose: int, file_path: str):
 
                 try:
                     key = mapping[mapped_note]
+                    duration = mido.tick2second(event.time, ticks_per_beat, microsecond_per_4)
+
+                    if enable_hold:
+                        match event.type:
+                            case 'note_on':
+                                controller.press(key)
+                            case 'note_off':
+                                controller.release(key)
+                    else:
+                        match event.type:
+                            case 'note_on':
+                                controller.press(key)
+                                controller.release(key)
+
                 except KeyError:
                     print(f'Cannot map note #{mapped_note}.')
-
-                duration = mido.tick2second(event.time, ticks_per_beat, microsecond_per_4)
+                    continue
 
                 time.sleep(duration)
-
-                match event.type:
-                    case 'note_on': controller.press(key)
-                    case 'note_off': controller.release(key)
     print()
 
     print('Song terminated normally.')
