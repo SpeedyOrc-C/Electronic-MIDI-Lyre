@@ -1,76 +1,54 @@
-"""
-A script that helps you play Lyres in Genshin Impact with your MIDI keyboard.
-"""
+import argparse
+from typing import Optional, Literal
 
-import pynput.keyboard
-import pygame.midi
-
-import time
+import mappings
+import freestyle
+import play
 
 
-def is_note_on_event(e: int) -> bool:
-    """
-    Check if this MIDI event is "Note On"
-    """
-    return e >> 4 == 0b1001
+class Args:
+    instrument: Literal['genshin-lyre', 'genshin-horn']
+    action: str
+    file_path: Optional[str]
+    transpose: int
 
 
-midi_key_to_lyre_key = {
-    84: 'q', 86: 'w', 88: 'e', 89: 'r', 91: 't', 93: 'y', 95: 'u',
-    72: 'a', 74: 's', 76: 'd', 77: 'f', 79: 'g', 81: 'h', 83: 'j',
-    60: 'z', 62: 'x', 64: 'c', 65: 'v', 67: 'b', 69: 'n', 71: 'm',
-}
+def main(args: Args):
+    mapping: dict[int, str]
 
-pygame.midi.init()
-print("=== Electronic MIDI Lyre ===")
-print("Middle C is mapped to key A (first note at 2nd row) in the game.")
+    match args.instrument:
+        case 'genshin-lyre':
+            mapping = mappings.MAPPING_GENSHIN_LYRE
+        case 'genshin-horn':
+            mapping = mappings.MAPPING_GENSHIN_HORN
+        case _:
+            raise ValueError('This should never happen')
 
-print('MIDI Input Devices:')
-for device_id in range(pygame.midi.get_count()):
-    device_info = pygame.midi.get_device_info(device_id)
-    is_input = device_info[2]
-    if is_input:
-        device_name = device_info[1].decode('utf8')
-        print(f'  [{device_id + 1}]\t{device_name}')
+    match args.action:
+        case 'freestyle':
+            freestyle.main(mapping, args.transpose)
+        case 'play':
+            play.main(mapping, args.transpose, args.file_path)
+        case _:
+            raise ValueError('This should never happen')
 
-selected_id: int = pygame.midi.get_default_input_id()
-while True:
-    try:
-        selected_id = int(input('Select a device by its number: '))
-    except ValueError:
-        print('Please enter an integer.')
-        continue
 
-    if not 1 <= selected_id <= pygame.midi.get_count():
-        print(f'Please choose a number between 1 and {pygame.midi.get_count()}.')
-        continue
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('instrument', choices=['genshin-lyre', 'genshin-horn'])
+    parser.add_argument('action', choices=['freestyle', 'play'])
+    parser.add_argument('file_path', nargs='?')
+    parser.add_argument('-t', '--transpose', type=int, default=0)
 
-    is_input = pygame.midi.get_device_info(selected_id - 1)[2]
-    if not is_input:
-        print('This is not an input device.')
-        continue
+    # noinspection PyTypeChecker
+    parsed_args: Args = parser.parse_args()
 
-    break
+    match parsed_args.action:
+        case 'freestyle':
+            if parsed_args.file_path is not None:
+                parser.error('Unexpected file name.')
+        case 'play':
+            if parsed_args.file_path is None:
+                parser.error('Expect a MIDI file.')
 
-available_keys = set(midi_key_to_lyre_key.keys())
-midi_input = pygame.midi.Input(selected_id - 1)
-keyboard = pynput.keyboard.Controller()
-
-print('Mapping start...')
-while True:
-
-    if not midi_input.poll():
-        time.sleep(0.001)
-        continue
-
-    for event in midi_input.read(midi_input.poll()):
-        if not is_note_on_event(event[0][0]):
-            continue
-
-        midi_key = event[0][1]
-        if midi_key not in available_keys:
-            continue
-
-        lyre_key = midi_key_to_lyre_key[midi_key]
-        keyboard.press(lyre_key)
-        keyboard.release(lyre_key)
+    main(parsed_args)
